@@ -15,8 +15,8 @@ To maintain data on in-patients.
 To maintain data on both surgical and non-surgical supplies, and their suppliers.
 To maintain data on ward requisitions.
 
-## 1. Provide a user’s requirements specification for the global views:
-Examine the following in detail and identify and compile a user specification for the Medical Director’s and the Charge Nurse’s views.  Create one conceptual data model (EER) for both of the user views. State any assumptions necessary to support your design. Of course, to complete this exercise will require that you may make some assertions about the precise requirements of each user view. Any assumption should be documented along with the view.
+## 1. Preview:
+Based upon the following information/requirements, user specifications were compiled for the Medical Director’s and the Charge Nurse’s views.  One conceptual data model (EER) was created for both of the user views. All assumptions are stated to ensure alignment with client needs and support my design.
 
 ### 1a. Medical Director:
 The Director is responsible for the overall management of the hospital and must maintain control over the use of resources (including staff, beds, and supplies) in the provision of cost-effective treatment for all patients.
