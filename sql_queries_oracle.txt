@@ -1,0 +1,440 @@
+# Creating tables and data aligning with client goals for implementation testing
+
+CREATE TABLE Staff (
+	staffNo INT NOT NULL,
+	firstName varchar(25),
+	lastName varchar(25),
+	address varchar(255),
+	phoneNo varchar(15),
+	position varchar(25),
+	weeklyHours INT,
+	shift char(5),
+	CONSTRAINT PK_Staff PRIMARY KEY (staffNo)
+);
+
+INSERT INTO Staff (staffNo, firstName, lastName, address, phoneNo, position, weeklyHours, shift)
+VALUES ('1','Joe','Johnson','123 State Street, Chicago, IL','630-123-4567','Charge Nurse','60','early');
+INSERT INTO Staff VALUES ('2','Mike','Murphy','456 Lane, Evanston, IL','630-987-6543','Nurse','35','late');
+INSERT INTO Staff (staffNo, firstName, lastName, address, phoneNo, position, weeklyHours, shift)
+VALUES ('3','George','Brown','789 Circle, Evanston, IL','630-456-7891','Consultant','45','night');
+INSERT INTO Staff VALUES ('4','Paul','Jones','438 Block, Evanston, IL','630-486-8954','Charge Nurse','50','early');
+INSERT INTO Staff (staffNo, firstName, lastName, address, phoneNo, position, weeklyHours, shift)
+VALUES ('5','Melissa','Owens','346 Street, Evanston, IL','630-459-7865','Consultant','40','early');
+
+
+CREATE TABLE Specialist (
+	staffno INT NULL,
+    	specialistType varchar (20) NULL,
+	CONSTRAINT PK_Specialist PRIMARY KEY (specialistType, staffno),
+	CONSTRAINT FK_Staff FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+);
+
+INSERT INTO Specialist VALUES ('2','Specialist1');
+INSERT INTO Specialist VALUES ('4','Specialist2');
+
+
+CREATE TABLE Ward (
+	wardNo varchar(5) NOT NULL,
+	wardName char(10),
+	phoneNo varchar(15),
+	location varchar(10),
+	numberOfBeds INT,
+	staffNo INT NOT NULL,
+	CONSTRAINT PK_Ward PRIMARY KEY (wardNo),
+	CONSTRAINT FK_ChargeNurse FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+);
+
+INSERT INTO Ward VALUES ('A1','WestWing','630-594-4648','Block A','50','1');
+INSERT INTO Ward VALUES ('B2','SouthWing','630-594-4786','Block B','55','4');
+INSERT INTO Ward VALUES ('C3','NorthWing','630-594-4864','Block C','60','1');
+INSERT INTO Ward VALUES ('D4','EastWing','630-594-4956','Block D','65','4');
+
+
+CREATE TABLE Bed (
+	bedNo INT NOT NULL,
+	wardNo varchar(5) NOT NULL,
+	CONSTRAINT PK_Bed PRIMARY KEY (bedNo, wardNo),
+	CONSTRAINT FK_Ward FOREIGN KEY (wardNo) REFERENCES Ward(wardNo)
+);
+
+INSERT INTO Bed VALUES ('90','A1');
+INSERT INTO Bed VALUES ('80','A1');
+INSERT INTO Bed VALUES ('70','B2');
+INSERT INTO Bed VALUES ('60','C3');
+INSERT INTO Bed VALUES ('50','D4');
+
+
+CREATE TABLE LocalClinic (
+	clinicNo INT NOT NULL,
+	docName varchar(50) NOT NULL,
+	docAddress varchar(255),
+	docPhoneNo varchar(15),
+	CONSTRAINT PK_LocalClinic PRIMARY key (clinicNo, docName)
+);
+
+INSERT INTO LocalClinic VALUES('54','Johnson','9420 Lane, Chicago, IL','888-659-4823');
+INSERT INTO LocalClinic VALUES('23','Jones','2390 Street, Chicago, IL','498-498-8453');
+INSERT INTO LocalClinic VALUES('75','Brady','2420 Circle, Evanston, IL','595-458-7845');
+INSERT INTO LocalClinic VALUES('87','Jordan','9350 Blvd, Evanston, IL','569-564-4565');
+
+
+CREATE TABLE StaffSchedule (
+	weekNo INT NOT NULL,
+	shift char(5) NOT NULL,
+	staffNo INT NOT NULL,
+	wardNo varchar(5) NOT NULL,
+	CONSTRAINT PK_StaffSchedule PRIMARY KEY (staffNo, wardNo, weekNo),
+	CONSTRAINT FK_StaffOnSchedule FOREIGN KEY (staffNo) REFERENCES staff(staffNo),
+	CONSTRAINT FK_WardOnSchedule FOREIGN KEY (wardNo) REFERENCES ward(wardNo)
+);
+
+INSERT INTO StaffSchedule VALUES('5','early','1','A1');
+INSERT INTO StaffSchedule VALUES('5','late','2','A1');
+INSERT INTO StaffSchedule VALUES('24','night','3','B2');
+INSERT INTO StaffSchedule VALUES('40','early','4','C3');
+INSERT INTO StaffSchedule VALUES('24','late','5','D4');
+
+
+CREATE TABLE Supplier (
+	supplierNo INT NOT NULL,
+	supplierName varchar(50),
+	supplierAddress varchar(255),
+	supplierPhoneNo varchar(15) NULL,
+	supplierFaxNo varchar(15),
+	CONSTRAINT PK_Supplier PRIMARY KEY (supplierNo)
+);
+
+INSERT INTO Supplier VALUES ('45','MedSupply','2463 Street, Miami, FL','548-484-6476','548-484-6477');
+INSERT INTO Supplier (supplierNo, supplierName, supplierAddress, supplierFaxNo)
+VALUES ('346','MedLine','3039 Lane, Los Angeles, CA','786-787-3969');
+INSERT INTO Supplier VALUES ('67','BudgetSupply','9330 Blvd, New York, NY','595-564-6877','595-564-6878');
+INSERT INTO Supplier (supplierNo, supplierName, supplierAddress, supplierFaxNo)
+VALUES ('48','InnovativeSupply','3249 Circle, Dallas, TX','632-594-9762');
+INSERT INTO Supplier VALUES ('23','QualitySupply','9023 Road, Witchita, KS','324-486-4497','324-486-4498');
+
+
+CREATE TABLE GeneralSupply (
+	itemNo INT NOT NULL,
+	itemName varchar(50),
+	itemDesc varchar(100),
+	stockQuantity INT,
+	reorderLevel INT,
+	unitCost INT,
+	supplierNo INT NOT NULL,
+	CONSTRAINT PK_GeneralSupply PRIMARY KEY (itemNo),
+	CONSTRAINT FK_Supplier FOREIGN KEY (supplierNo) REFERENCES Supplier(supplierNo)
+);
+
+INSERT INTO GeneralSupply VALUES ('6454','Gauze','Surgical','4775','2465','10','45');
+INSERT INTO GeneralSupply VALUES ('65494','Bandages','Non-Surgical','235','2',	'2','346');
+INSERT INTO GeneralSupply VALUES ('341354','Ointment','Non-Surgical','3468','213','235','67');
+INSERT INTO GeneralSupply VALUES ('49494','Masks','Surgical','3467','6','4','48');
+INSERT INTO GeneralSupply VALUES ('45645','Gloves','Surgical','4375','135','5','23');
+
+
+CREATE TABLE PharmSupply (
+	drugNo INT NOT NULL,
+	drugName varchar(50),
+	drugDesc varchar(255),
+	dosage INT,
+	stockQuantity INT,
+	reorderLevel INT,
+	unitCost INT,
+	supplierNo INT NOT NULL,
+	CONSTRAINT PK_Drug PRIMARY KEY (drugNo),
+	CONSTRAINT FK_SupplierPharm FOREIGN KEY (supplierNo) REFERENCES Supplier(supplierNo)
+);
+
+INSERT INTO PharmSupply VALUES ('234',	'Aspirin','Pharmaceutical','10','356','28','5','45');
+INSERT INTO PharmSupply VALUES ('235',	'Tylenol','Pharmaceutical','5','867','8','9','346');
+INSERT INTO PharmSupply VALUES ('7','Ibuprofen','Pharmaceutical','92','235','4','24','67');
+INSERT INTO PharmSupply VALUES ('523','Advil','Pharmaceutical','438','624','928','29','48');
+INSERT INTO PharmSupply VALUES ('76','Cortisol','Pharmaceutical','96','9248','34','3','23');
+
+
+CREATE TABLE Requisition (
+	reqNo INT NOT NULL,
+	staffNo INT NOT NULL,
+	wardNo varchar(5) NOT NULL,
+	itemNo INT NULL,
+	drugNo INT NULL,
+	quantReq varchar(25),
+	orderDate DATE NOT NULL,
+	dateReceived DATE,
+	CONSTRAINT PK_Requisition PRIMARY KEY (reqNo),
+	CONSTRAINT FK_ReqStaff FOREIGN KEY (staffNo) REFERENCES Staff(staffNo),
+	CONSTRAINT FK_ReqGeneralSupply FOREIGN KEY (itemNo) REFERENCES GeneralSupply(itemNo),
+	CONSTRAINT FK_ReqPharmSupply FOREIGN KEY (drugNo) REFERENCES PharmSupply(drugNo)
+);
+
+INSERT INTO Requisition VALUES ('34', '1', 'A1', '6454', '234', '4', '01-mar-2021', '01-mar-2021');
+INSERT INTO Requisition VALUES ('23', '4', 'B2', '65494', '235', '3', '01-mar-2021', '01-mar-2021');
+INSERT INTO Requisition VALUES ('67', '1', 'C3', '341354', '7', '6', '03-mar-2021', '03-mar-2021');
+INSERT INTO Requisition VALUES ('65', '4', 'D4', '49494', '523', '5', '04-mar-2021', '04-mar-2021');
+INSERT INTO Requisition VALUES ('89', '1', 'A1', '45645', '76', '1', '05-mar-2021', '05-mar-2021');
+
+
+CREATE TABLE Patient (
+	patientNo INT NOT NULL,
+	firstName varchar(20),
+	lastName varchar(20),
+	address varchar(255),
+	phoneNo varchar(15),
+	dob DATE,
+	maritalStatus char(1),
+	docName varchar(50) NULL,
+	clinicNo INT NULL,
+	immFamPhoneNo varchar(15) NULL,
+	CONSTRAINT PK_Patient PRIMARY KEY (patientNo),
+	CONSTRAINT FK_PatientLocalDoctor FOREIGN KEY (clinicNo,docName) REFERENCES LocalClinic(clinicNo,docName)
+);
+
+INSERT INTO Patient VALUES ('101','John','Barker','3498 Road, Chicago, IL','594-568-4896','01-jan-1980','s','Johnson','54','945-597-4974');
+INSERT INTO Patient VALUES ('202','Josh','Stan','3548 Circle, Chicago, IL','798-659-5974','02-feb-1990','m','Jones','23','955-564-6850');
+INSERT INTO Patient VALUES ('303','Luke','Paul','1209 Lane, Chicago, IL','329-596-4642','03-mar-2000','d','Brady','75','945-656-4976');
+INSERT INTO Patient VALUES ('404','Murphy','Johnson','2309 Blvd, Chicago, IL','259-564-4365','04-apr-1985','s','Jordan','87','986-546-5464');
+INSERT INTO Patient VALUES ('505','Sally','Jones','2948 Way, Evanston, IL','954-455-4643','05-may-1995','m','Johnson','54','528-567-4643');
+
+CREATE TABLE ImmFamContact (
+	immFamFirstName varchar(20),
+	immFamLastName varchar(20),
+	immFamRelationship varchar(10),
+	immFamAddress varchar(255),
+	immFamPhoneNo varchar(15) NULL,
+	patientNo INT NULL,
+	CONSTRAINT PK_ImmFamContact PRIMARY KEY (patientNo, immFamPhoneNo),
+   	CONSTRAINT FK_Patient FOREIGN KEY (patientNo) REFERENCES Patient(patientNo)
+);
+
+INSERT INTO ImmFamContact VALUES ('Melissa','Park','Sister','3498 Road, Chicago, IL','945-597-4974','101');
+INSERT INTO ImmFamContact VALUES ('Molly','Johnson','Wife','3548 Circle, Chicago, IL','955-564-6850','202');
+INSERT INTO ImmFamContact VALUES ('Stan','Joney','Brother','1209 Lane, Chicago, IL','945-656-4976','303');
+INSERT INTO ImmFamContact VALUES ('Phil','Petulla','Brother','2309 Blvd, Chicago, IL','986-546-5464','404');
+INSERT INTO ImmFamContact VALUES ('Mark','Lilly','Husband','2948 Way, Evanston, IL','528-567-4643','505');
+
+ALTER TABLE Patient 
+ADD CONSTRAINT FK_PatImmFamContact
+FOREIGN KEY (patientNo, immFamPhoneNo) REFERENCES ImmFamContact(patientNo, immFamPhoneNo);
+
+
+CREATE TABLE Appointment (
+	apptNo INT NULL,
+	apptDate DATE,
+	apptTime INT,
+	examRoom varchar(5),
+	patientNo INT NULL,
+	staffNo INT NULL,
+	staffLastName varchar(25),
+	CONSTRAINT PK_Appointment PRIMARY KEY (apptNo),
+	CONSTRAINT FK_ApptPatient FOREIGN KEY (patientNo)REFERENCES Patient(patientNo),
+	CONSTRAINT FK_ApptStaff FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+);
+
+INSERT INTO Appointment VALUES ('10','05-apr-2021','09','10','101','3','Brown');
+INSERT INTO Appointment VALUES ('20','06-feb-2021','10','20','202','5','Owens');
+INSERT INTO Appointment VALUES ('30','07-jan-2021','11','30','303','3','Brown');
+INSERT INTO Appointment VALUES ('40','08-nov-2021','12','40','404','5','Owens');
+INSERT INTO Appointment VALUES ('50','09-dec-2021','01','50','505','3','Brown');
+INSERT INTO Appointment VALUES ('80','11-dec-2021','12','40','202','3','Owens');
+INSERT INTO Appointment VALUES ('70','12-dec-2021','12','40','202','5','Owens');
+
+
+CREATE TABLE Inpatient (
+    	patientNo INT NOT NULL,
+	waitListDate DATE NULL,
+	reqWard varchar(5) NULL,
+	datePlacedWard varchar(15) NULL,
+	expDurStay varchar(10) NULL,
+	dateLeftWard varchar(15) NULL,
+	bedNo INT NULL,
+   	wardNo varchar(5) NULL,
+	staffNo INT NULL,
+	CONSTRAINT PK_Inpatient PRIMARY KEY (patientNo, waitListDate, datePlacedWard),
+	CONSTRAINT FK_InPatPatient FOREIGN KEY (patientNo) REFERENCES Patient(patientNo),
+	CONSTRAINT FK_Bed FOREIGN KEY (bedNo, wardNo) REFERENCES Bed(bedNo, wardNo),
+	CONSTRAINT FK_Specialist FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+);
+
+INSERT INTO Inpatient VALUES ('101','05-mar-2021','A1','01-jan-1900','10 days','01-jan-1900','50','D4','1');
+INSERT INTO Inpatient VALUES ('202','01-jan-1900','B2','06-mar-2021','30 days','04,apr-2021','80','A1','2');
+INSERT INTO Inpatient VALUES ('303','01-jan-1900','C3','07-mar-2021','15 days','22-mar-2021','70','B2','3');
+
+
+CREATE TABLE Outpatient (
+	patientNo INT NULL,
+	outApptDate DATE NULL,
+	outApptTime INT NULL,
+	CONSTRAINT PK_Outpatient PRIMARY KEY (patientNo, outApptDate),
+	CONSTRAINT FK_OutPatPatient FOREIGN KEY (patientNo) REFERENCES Patient(patientNo)
+);
+
+INSERT INTO Outpatient VALUES ('404','08-mar-2021','0800');
+INSERT INTO Outpatient VALUES ('505','09-mar-2021','0900');
+INSERT INTO Outpatient VALUES ('404','10-mar-2021','1000');
+INSERT INTO Outpatient VALUES ('404','09-mar-2021','0900');
+
+
+CREATE TABLE Medication (
+	unitsPerDay varchar(25) NOT NULL,
+	startDate DATE NOT NULL,
+	finishDate DATE NULL,
+	patientNo INT NULL,
+	staffNo INT NULL,
+	drugNo INT NULL,
+	CONSTRAINT PK_Medication PRIMARY KEY (drugNo, patientNo, staffNo, startDate),
+	CONSTRAINT FK_MedDrug FOREIGN KEY (drugNo) REFERENCES PharmSupply(drugNo),
+	CONSTRAINT FK_MedPatient FOREIGN KEY (patientNo) REFERENCES Patient(patientNo),
+	CONSTRAINT FK_MedStaff FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+);
+
+INSERT INTO Medication VALUES ('5','06-mar-2021','06-apr-2021','101','1','234');
+INSERT INTO Medication VALUES ('3','07-mar-2021','22-mar-2021','202','2','235');
+INSERT INTO Medication VALUES ('2','08-mar-2021','23-mar-2021','303','3','7');
+
+# Views created for Medical Director and Charge Nurse
+
+Medical Director View
+1.
+SELECT *
+FROM WARD
+WHERE wardno = 'A1'
+
+2.
+SELECT wardno, numberofbeds
+FROM WARD
+
+3.
+SELECT itemname, itemdesc, stockquantity
+FROM generalsupply
+WHERE itemdesc = 'Surgical'
+ORDER BY stockquantity DESC
+
+4.
+SELECT itemname, itemdesc, stockquantity
+FROM generalsupply
+WHERE itemdesc = 'Surgical' and reorderlevel > 10
+ORDER BY stockquantity DESC
+
+5.
+SELECT *
+FROM generalsupply
+WHERE itemdesc = 'Surgical' and unitcost > 9
+
+6.
+SELECT *
+FROM supplier
+WHERE supplierphoneno IS null
+
+7.
+SELECT generalsupply.itemno, generalsupply.itemname, generalsupply.supplierno, supplier.suppliername, generalsupply.stockquantity
+FROM generalsupply
+INNER JOIN supplier ON generalsupply.supplierno=supplier.supplierno
+UNION
+SELECT pharmsupply.drugno, pharmsupply.drugname, pharmsupply.supplierno, supplier.suppliername, pharmsupply.stockquantity
+FROM pharmsupply
+INNER JOIN supplier ON pharmsupply.supplierno=supplier.supplierno
+
+8.
+WITH inpatientclinic as (
+    SELECT I.PATIENTNO, P.CLINICNO FROM PATIENT P, INPATIENT I
+    WHERE P.PATIENTNO = I.PATIENTNO
+    AND ( (WAITLISTDATE BETWEEN add_months( trunc(sysdate), -12) AND sysdate) 
+    OR 
+    (DATEPLACEDWARD BETWEEN add_months( trunc(sysdate), -12) AND sysdate))
+), outpatientclinic as (
+    SELECT I.PATIENTNO, P.CLINICNO FROM PATIENT P, OUTPATIENT I
+    WHERE P.PATIENTNO = I.PATIENTNO
+        AND OUTAPPTDATE BETWEEN add_months( trunc(sysdate), -12) AND sysdate
+), clinics as (
+    SELECT * FROM inpatientclinic
+    UNION 
+    SELECT * FROM outpatientclinic
+), distinctclinics as (
+    SELECT DISTINCT * FROM clinics 
+), numberofpatients as (
+    SELECT CLINICNO, count(PATIENTNO) as patient_count
+    FROM distinctclinics
+    GROUP BY CLINICNO
+)
+    SELECT C.*, N.patient_count FROM
+    numberofpatients N,
+    LOCALCLINIC C
+    WHERE C.CLINICNO = N.CLINICNO
+
+9.
+SELECT count(DISTINCT patientno) as PatientCount, outapptdate
+FROM outpatient
+GROUP BY outapptdate
+ORDER BY outapptdate
+
+10.
+SELECT patientno
+FROM inpatient
+WHERE waitlistdate BETWEEN '20-feb-2021' AND '11-mar-2021'
+
+
+Charge Nurse
+1.
+SELECT staff.staffno, staff.firstname, staff.lastname,staffschedule.wardno
+FROM staff
+INNER JOIN staffschedule ON staffschedule.staffno=staff.staffno
+ORDER BY staff.lastname, staff.firstname
+
+2.
+SELECT staff.firstname, staff.lastname, ward.wardno, ward.staffno
+FROM staff, ward
+WHERE ward.staffno=staff.staffno
+ORDER BY ward.wardno
+
+3.
+SELECT patient.firstname, patient.lastname, inpatient.bedno
+FROM patient, inpatient
+WHERE patient.patientno=inpatient.patientno
+ORDER BY inpatient.bedno
+
+4.
+SELECT itemno, drugno, orderdate
+FROM requisition
+WHERE orderdate = '01-mar-21'
+
+5.
+SELECT weekno, shift, count(staffno) as StaffCount, wardno
+FROM staffschedule
+GROUP BY weekno, shift, wardno
+ORDER BY wardno, shift
+
+6.
+SELECT p.firstname, p.lastname, p.patientno, i.immfamfirstname, i.immfamlastname, i.immfamrelationship, i.immfamaddress, i.immfamphoneno
+FROM immfamcontact i
+RIGHT JOIN patient p ON p.patientno=i.patientno
+ORDER BY i.patientno
+
+7.
+SELECT s.staffno, w.wardno, s.firstname, s.lastname 
+FROM staff s, ward w, specialist sp
+WHERE s.staffno = w.staffno AND sp.staffno = w.staffno
+
+8.
+SELECT *
+FROM (
+SELECT m.patientno, MAX(p.dosage) AS HighestDosage
+FROM medication m JOIN pharmsupply p ON p.drugno = m.drugno
+GROUP BY m.patientno
+ORDER BY HighestDosage DESC)
+WHERE rownum <= 1
+
+9.
+SELECT *
+FROM pharmsupply
+WHERE reorderlevel = (SELECT MAX(reorderlevel)
+                      FROM pharmsupply)
+
+10.
+CREATE VIEW NoApptsView AS
+SELECT DISTINCT(apptdate), TO_CHAR((apptdate),'ww') "WeekOfYear", COUNT(apptdate)as NoAppts
+FROM appointment
+GROUP BY apptdate
+
+SELECT DISTINCT("WeekOfYear"), SUM(NoAppts)
+FROM NoApptsView
+GROUP BY "WeekOfYear"
